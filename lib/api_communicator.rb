@@ -7,9 +7,19 @@ def get_character_movies_from_api(character_name)
   response_string = RestClient.get('http://www.swapi.co/api/people/')
   response_hash = JSON.parse(response_string)
 
-  # Bonus helper function 
-  films = get_films_for_character(character_name, response_hash["results"])
+  films = []
 
+  # Bonus helper function 
+  
+
+  while films.size == 0
+    films = get_films_for_character(character_name, response_hash["results"])
+    if films.size == 0
+      response_hash = JSON.parse(RestClient.get(response_hash["next"]))
+      films = get_films_for_character(character_name, response_hash["results"])
+    end
+    # binding.pry
+  end
 
   # response_hash["results"].each do |character_info|
   #   if character_name == character_info["name"]
@@ -56,4 +66,5 @@ def get_films_for_character(character_name, character_hash)
       return character["films"]
     end
   end
+  return []
 end
